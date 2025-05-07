@@ -4,8 +4,8 @@ import (
 	"crypto"
 	"crypto/aes"
 	"crypto/tls"
-	"fmt"
 	"encoding/binary"
+	"fmt"
 	"io"
 
 	"github.com/quic-go/quic-go/quicvarint"
@@ -169,6 +169,10 @@ func SniffQUIC(b []byte) (*SniffHeader, error) {
 			return nil, err
 		}
 
+		// very stange packet length, maybe a fake QUIC header
+		if packetNumberLength > int(packetLen) {
+			return nil, errNotQuic
+		}
 		extHdrLen := hdrLen + packetNumberLength
 		data := b[extHdrLen : int(packetLen)+hdrLen]
 		decrypted, err := cipher.Open(b[extHdrLen:extHdrLen], nonce, data, b[:extHdrLen])
