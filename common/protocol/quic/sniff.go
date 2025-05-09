@@ -5,7 +5,6 @@ import (
 	"crypto/aes"
 	"crypto/tls"
 	"encoding/binary"
-	"fmt"
 	"io"
 
 	"github.com/quic-go/quic-go/quicvarint"
@@ -48,15 +47,6 @@ var (
 )
 
 func SniffQUIC(b []byte) (*SniffHeader, error) {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("QUIC sniffer panic, please send the information below to the developer.")
-			fmt.Println("<-------------------- BEGIN QUIC BYTE -------------------->")
-			fmt.Println(b)
-			fmt.Println("<--------------------- END QUIC BYTE -------------------->")
-			panic(r)
-		}
-	}()
 	if len(b) == 0 {
 		return nil, common.ErrNoClue
 	}
@@ -169,7 +159,7 @@ func SniffQUIC(b []byte) (*SniffHeader, error) {
 			return nil, err
 		}
 
-		// very stange packet length, maybe a fake QUIC header
+		// very strange packet length, maybe a fake QUIC header
 		if packetNumberLength > int(packetLen) {
 			return nil, errNotQuic
 		}
